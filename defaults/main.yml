@@ -1,0 +1,10 @@
+---
+  # Title: Ansible role PXE server
+  #
+  # Author: Luc Rutten
+  # Version: 1.0
+  # File: defaults/main.yml
+  #
+  # Description: PXE TFTP boot server
+
+  pxe_subnet: 192.168.0.0

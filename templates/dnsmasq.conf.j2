@@ -1,0 +1,7 @@
+port=0
+log-dhcp
+dhcp-range={{ pxe_subnet }},proxy
+dhcp-boot=pxelinux.0
+pxe-service=x86PC,'Network Boot',pxelinux
+enable-tftp
+tftp-root=/opt/tftpboot

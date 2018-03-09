@@ -1,0 +1,18 @@
+---
+  # Title: Ansible role PXE server
+  #
+  # Author: Luc Rutten
+  # Version: 1.0
+  # File: handlers/main.yml
+  #
+  # Description: PXE TFTP boot server
+
+  - name: "restart_dnsmasq"
+    systemd:
+      state: restarted
+      name: dnsmasq.service
+
+  - name: "restart_networking"
+    systemd:
+      state: restarted
+      name: networking.service

@@ -1,18 +1,6 @@
-DEFAULT vesamenu.c32
-MENU TITLE PXE server
-
-TIMEOUT 80
-TOTALTIMEOUT 900
-
-MENU SEPARATOR
-
-LABEL Ubuntu Server 16.04 AMD64
-  MENU LABEL Ubuntu Server 16.04 amd64
-  KERNEL /memdisk
-  APPEND iso initrd=/images/ubuntu/16.04/amd64/mini.iso vmalloc=1500Mi​s
-
-MENU SEPARATOR
-
-LABEL Abort
-  MENU LABEL Abort PXE
-  Kernel abortpxe.0" > /var/lib/tftpboot/pxelinux.cfg/default
+default menu.c32
+prompt 0
+menu title PXE server boot Menu
+  label localboot
+    menu label Boot Local Disk
+    localboot 0

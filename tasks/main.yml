@@ -1,66 +1,62 @@
 ---
-  # Tasks: Ansible role pxe server.
+  # Title: Ansible role PXE server
   #
   # Author: Luc Rutten
   # Version: 1.0
-  
-  - name:  ""
+  # File: tasks/main.yml
+  #
+  # Description: PXE TFTP boot server
   
   - name: "Install Packages"
     apt:
       name: "{{ item }}"
-      state: present
       update_cache: yes
     with_items:
-      - apache2
-      - tftpd-hpa
-      - inetutils-inetd
+      - pxelinux
       - syslinux
-    
-  - name: "Configure /etc/default/tftpd-hpa"
+      - dnsmasq
+      
+  - name: "Transfer template dnsmasq.conf.j2 to /etc/dnsmasq.conf"
     template:
-      src: tftpd-hpa.j2
-      dest: /etc/default/tftpd-hpa
+      src: dnsmasq.conf.j2
+      dest: /etc/dnsmasq.conf
       owner: root
       group: root
-      mode: 0755
-   
-  - name: "Configure /etc/inetd.conf"
-    lineinfile:
-      path: /etc/inetd.conf
-      line: 'tftp    dgram   udp    wait    root    /usr/sbin/in.tftpd /usr/sbin/in.tftpd -s /var/lib/tftpboot'
+      mode: '0755'
       backup: yes
-  
-  - name: "Configure boot menu - pxelinux.0 vesamenu.c32 memdisk"
-    file:
-        src: '{{ item.src }}'
-        dest: '{{ item.dest }}'
-        state: link
-      with_items:
-    #    - { src: '/usr/lib/syslinux/pxelinux.0', dest: '/var/lib/tftpboot/pxelinux.0' }
-        - { src: '/usr/lib/syslinux/modules/bios/vesa.c32', dest: '/var/lib/tftpboot/vesamenu.c32' }
-        - { src: '/usr/lib/syslinux/memdisk', dest: '/var/lib/tftpboot/memdisk' }
-
-  - name: "Configure boot menu - create directory /var/lib/tftpboot/pxelinux.cfg/"
-    file:
-      dest: /var/lib/tftpboot/pxelinux.cfg/
-      state: directory
-    
-  - name: "Add Ubuntu 16.04 netinstall /var/lib/tftpboot/images/ubuntu/16.04/amd64"     
-    file:
-      dest: /var/lib/tftpboot/images/ubuntu/16.04/amd64
-      state: directory
+ 
+  - name: "Configure /etc/default/dnsmasq"
+    lineinfile:
+      path: /etc/default/dnsmasq
+      line: 'DNSMASQ_EXCEPT=lo'
+      backup: yes
       
-  - name: "Download Ubuntu 16.04 netinstall to /var/lib/tftpboot/images/ubuntu/16.04/amd64"
-    get_url:
-      url: http://archive.ubuntu.com/ubuntu/dists/xenial-updates/main/installer-amd64/current/images/netboot/mini.iso
-      dest: /var/lib/tftpboot/images/ubuntu/16.04/amd64/mini.iso
+  - name: "Create TFTP root"
+    file:
+      path: /opt/tftpboot/pxelinux.cfg
+      state: directory
+      mode: 0755
+    notify:
+      - restart_dnsmasq
+      - restart_networking
+      
+  - name: "Populate TFTP root"
+    copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      remote_src: yes
+    with_items:
+      - { src: '/usr/lib/PXELINUX/pxelinux.0', dest: '/opt/tftpboot/pxelinux.0' }
+      - { src: '/usr/lib/syslinux/modules/bios/menu.c32', dest: '/opt/tftpboot/menu.c32' }
+      - { src: '/usr/lib/syslinux/modules/bios/ldlinux.c32', dest: '/opt/tftpboot/ldlinux.c32' } 
+      - { src: '/usr/lib/syslinux/modules/bios/libmenu.c32', dest: '/opt/tftpboot/libmenu.c32' } 
+      - { src: '/usr/lib/syslinux/modules/bios/libutil.c32', dest: '/opt/tftpboot/libutil.c32' } 
   
-  - name: "Configure /var/lib/tftpboot/pxelinux.cfg/default"
+  - name: "Transfer template default.j2 to /opt/tftpboot/pxelinux.cfg/default"
     template:
       src: default.j2
-      dest: /var/lib/tftpboot/pxelinux.cfg/default
+      dest: /opt/tftpboot/pxelinux.cfg/default
       owner: root
       group: root
       mode: 0755
-  
+
