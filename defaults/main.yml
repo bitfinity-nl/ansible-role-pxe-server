@@ -8,3 +8,4 @@
   # Description: PXE TFTP boot server
 
   pxe_subnet: 192.168.0.0
+  pxe_tftpboot_dir: /opt/tftpboot

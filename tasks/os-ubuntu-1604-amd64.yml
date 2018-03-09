@@ -1,0 +1,45 @@
+---
+  # Title: Ansible role PXE server
+  #
+  # Author: Luc Rutten
+  # Version: 1.0
+  # File: tasks/os-ubuntu-1604-amd64.yml
+  #
+  # Description: Available OS for PXE server
+
+  - name: "Create directory /tmp/16-04-netboot"
+    file:
+      name: /tmp/16-04-netboot
+      state: directory
+
+  - name: "Download Ubuntu 16.04lts AMD64 (netinstall)"
+    unarchive:
+      src: http://archive.ubuntu.com/ubuntu/dists/xenial-updates/main/installer-amd64/current/images/netboot/netboot.tar.gz
+      dest: /tmp/16-04-netboot
+      remote_src: yes
+
+  - name: "Create directory {{ pxe_tftpboot_dir }}/images/ubuntu/1604"
+    file:
+      name: "{{ pxe_tftpboot_dir }}/images/ubuntu/1604"
+      state: directory
+
+  - name: "Copy files"
+    copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      remote_src: yes
+    with_items:
+      - { src: '/tmp/16-04-netboot/ubuntu-installer/amd64/linux', dest: '{{ pxe_tftpboot_dir }}/images/ubuntu/1604/linux' } 
+      - { src: '/tmp/16-04-netboot/ubuntu-installer/amd64/initrd.gz', dest: '{{ pxe_tftpboot_dir }}/images/ubuntu/1604/initrd.gz' } 
+
+  - name: "Edit Default"
+    blockinfile:
+      path: "{{ pxe_tftpboot_dir }}/pxelinux.cfg/default"
+      marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+      block: |
+        label Ubuntu 16.04LTS AMD64 (Netinstall)
+        menu Ubuntu 16.04LTS AMD64 (Netinstall)
+        kernel /images/ubuntu/1604/linux
+        append initrd=/images/ubuntu/1604/initrd.gz vga=788 
+      state: present
+      backup: yes
