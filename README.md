@@ -2,8 +2,10 @@
 Ansible role to setup a Ubuntu pxe server
 
 ## Variable(s)
+Variable(s) you can use in your own playbook.
 
 {{ pxe_subnet }}
+
 {{ pxe_tftpboot_dir}}
 
 ## Source(s)
