@@ -63,3 +63,22 @@
   - name: "Import task os-ubuntu-1604-amd64.yml"
     import_tasks: os-ubuntu-1604-amd64.yml
       
+  - name: "Allow 67/udp and Port 69/udp through UFW"
+    ufw:
+      rule: allow
+      port: "{{ item }}"
+      proto: udp
+      log: yes
+    with_items:
+      - 67
+      - 69
+
+  - name: "Allow 67/tcp and Port 69/tcp through UFW"
+    ufw:
+      rule: allow
+      port: "{{ item }}"
+      proto: tcp
+      log: yes
+    with_items:
+      - 67
+      - 69
