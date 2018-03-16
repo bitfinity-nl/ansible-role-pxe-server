@@ -32,31 +32,32 @@
       - { src: '/tmp/16-04-netboot/ubuntu-installer/amd64/linux', dest: '{{ pxe_tftpboot_dir }}/images/ubuntu/1604/linux' } 
       - { src: '/tmp/16-04-netboot/ubuntu-installer/amd64/initrd.gz', dest: '{{ pxe_tftpboot_dir }}/images/ubuntu/1604/initrd.gz' } 
 
-  - name: "Copy Template os-ubuntu-1604-amd64-preseed.yml.j2 to {{ pxe_tftpboot_dir }}/images/ubuntu/1604/os-ubuntu-1604-amd64-preseed.yml"
+  - name: "Copy Template os-ubuntu-1604-amd64-preseed.cfg.j2 to {{ pxe_tftpboot_dir }}/images/ubuntu/1604/os-ubuntu-1604-amd64-preseed.cfg"
     template:
-      src: os-ubuntu-1604-amd64-preseed.yml.j2
-      dest: "{{ pxe_tftpboot_dir }}/images/ubuntu/1604/os-ubuntu-1604-amd64-preseed.yml"
+      src: os-ubuntu-1604-amd64-preseed.cfg.j2
+      dest: "{{ pxe_tftpboot_dir }}/images/ubuntu/1604/os-ubuntu-1604-amd64-preseed.cfg"
       
   - name: "Add Ubuntu 16.04lts amd64 to {{ pxe_tftpboot_dir }}/pxelinux.cfg/default"
     blockinfile:
       path: "{{ pxe_tftpboot_dir }}/pxelinux.cfg/default"
-      marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+      marker: "## {mark} ANSIBLE - Ubuntu 16.04lts (default)"
       block: |
-        label Ubuntu 16.04lts
-        menu Ubuntu 16.04lts
+        MENU SEPARATOR
+        label Ubuntu 16.04lts (default)
+        menu Ubuntu 16.04lts (default)
         kernel /images/ubuntu/1604/linux
         append initrd=/images/ubuntu/1604/initrd.gz vga=788 
       state: present
       backup: yes
       
-  - name: "Add Ubuntu 16.04lts amd64 (preseed) to {{ pxe_tftpboot_dir }}/pxelinux.cfg/default"
+  - name: "Add Ubuntu 16.04lts amd64 to {{ pxe_tftpboot_dir }}/pxelinux.cfg/default"
     blockinfile:
       path: "{{ pxe_tftpboot_dir }}/pxelinux.cfg/default"
-      marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+      marker: "## {mark} ANSIBLE - Ubuntu 16.04lts (preseed)"
       block: |
-        label Ubuntu 16.04lts amd64 (preseed)
-        menu Ubuntu 16.04lts amd64 (preseed)
+        label Ubuntu 16.04lts (preseed)
+        menu Ubuntu 16.04lts (preseed)
         kernel /images/ubuntu/1604/linux
-        append initrd=/images/ubuntu/1604/initrd.gz vga=788 url=tftp://"{{ ansible_default_ipv4.address }}"/images/ubuntu/1604/os-ubuntu-1604-amd64-preseed.yml
+        append initrd=/images/ubuntu/1604/initrd.gz vga=788 url=tftp://{{ ansible_default_ipv4.address }}/images/ubuntu/1604/os-ubuntu-1604-amd64-preseed.cfg
       state: present
       backup: yes
