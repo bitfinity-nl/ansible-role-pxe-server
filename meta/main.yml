@@ -13,4 +13,6 @@ galaxy_info:
     - pxe
     - install
     - deployment
-- Windows
+    - ubuntu
+    - linux
+
