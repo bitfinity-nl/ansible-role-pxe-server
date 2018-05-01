@@ -60,9 +60,12 @@
       group: root
       mode: 0755
 
+  - name: "Import task os-ubuntu-1804-amd64.yml"
+    import_tasks: os-ubuntu-1804-amd64.yml 
+
   - name: "Import task os-ubuntu-1604-amd64.yml"
     import_tasks: os-ubuntu-1604-amd64.yml
-      
+     
   - name: "Allow 67/udp and Port 69/udp through UFW"
     ufw:
       rule: allow

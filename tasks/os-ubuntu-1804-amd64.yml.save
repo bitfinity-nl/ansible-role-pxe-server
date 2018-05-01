@@ -1,0 +1,64 @@
+---
+  # Title: Ansible role PXE server
+  #
+  # Author: Luc Rutten
+  # Version: 1.0
+  # File: tasks/os-ubuntu-1804-amd64.yml
+  #
+  # Description: Available OS for PXE server
+
+  - name: "Create directory /tmp/18-04-netboot"
+    file:
+      name: /tmp/18-04-netboot
+      state: directory
+
+  - name: "Download Ubuntu 18.04lts AMD64 (netinstall)"
+    unarchive:
+      src: http://archive.ubuntu.com/ubuntu/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/netboot.tar.gz
+      dest: /tmp/18-04-netboot
+      remote_src: yes
+
+  - name: "Create directory {{ pxe_tftpboot_dir }}/images/ubuntu/1804"
+    file:
+      name: "{{ pxe_tftpboot_dir }}/images/ubuntu/1804"
+      state: directory
+
+  - name: "Copy files"
+    copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      remote_src: yes
+    with_items:
+      - { src: '/tmp/18-04-netboot/ubuntu-installer/amd64/linux', dest: '{{ pxe_tftpboot_dir }}/images/ubuntu/1804/linux' } 
+      - { src: '/tmp/18-04-netboot/ubuntu-installer/amd64/initrd.gz', dest: '{{ pxe_tftpboot_dir }}/images/ubuntu/1804/initrd.gz' } 
+
+  - name: "Copy Template os-ubuntu-1804-amd64-preseed.cfg.j2 to {{ pxe_tftpboot_dir }}/images/ubuntu/1804/os-ubuntu-1804-amd64-preseed.cfg"
+    template:
+      src: os-ubuntu-1804-amd64-preseed.cfg.j2
+      dest: "{{ pxe_tftpboot_dir }}/images/ubuntu/1804/os-ubuntu-1804-amd64-preseed.cfg"
+      
+  - name: "Add Ubuntu 18.04lts amd64 to {{ pxe_tftpboot_dir }}/pxelinux.cfg/default"
+    blockinfile:
+      path: "{{ pxe_tftpboot_dir }}/pxelinux.cfg/default"
+      marker: "## {mark} ANSIBLE - Ubuntu 18.04lts (default)"
+      block: |
+        MENU SEPARATOR
+        label Ubuntu 18.04lts (default)
+        menu Ubuntu 18.04lts (default)
+        kernel /images/ubuntu/1804/linux
+        append initrd=/images/ubuntu/1804/initrd.gz vga=788 
+      state: present
+      backup: yes
+      
+  - name: "Add Ubuntu 18.04lts amd64 to {{ pxe_tftpboot_dir }}/pxelinux.cfg/default"
+    blockinfile:
+      path: "{{ pxe_tftpboot_dir }}/pxelinux.cfg/default"
+      marker: "## {mark} ANSIBLE - Ubuntu 18.04lts (preseed)"
+      block: |
+        label Ubuntu 18.04lts (preseed)
+        menu Ubuntu 18.04lts (preseed)
+        kernel /images/ubuntu/1804/linux
+#        append initrd=/images/ubuntu/1804/initrd.gz vga=788 url=tftp://{{ ansible_default_ipv4.address }}/images/ubuntu/1804/os-ubuntu-1804-amd64-preseed.cfg debian-installer/locale=nl_NL keyboard-configuration/layoutcode=us ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=NL localechooser/supported-locales=en_US.UTF-8         
+
+      state: present
+      backup: yes

@@ -58,6 +58,6 @@
         label Ubuntu 16.04lts (preseed)
         menu Ubuntu 16.04lts (preseed)
         kernel /images/ubuntu/1604/linux
-        append initrd=/images/ubuntu/1604/initrd.gz vga=788 url=tftp://{{ ansible_default_ipv4.address }}/images/ubuntu/1604/os-ubuntu-1604-amd64-preseed.cfg
+        append initrd=/images/ubuntu/1604/initrd.gz vga=788 url=tftp://{{ ansible_default_ipv4.address }}/images/ubuntu/1804/os-ubuntu-1804-amd64-preseed.cfg locale={{ pxe_preseed_locale }} keyboard-configuration/layoutcode={{ pxe_preseed_keyboard }}
       state: present
       backup: yes
