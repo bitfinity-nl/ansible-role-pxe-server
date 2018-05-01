@@ -29,5 +29,8 @@ pxe_preseed_user_password      : 'Welkom123'
 pxe_preseed_mirror             : 'nl.archive.ubuntu.com'
 
 ## Source(s)
+All credits goes to the author(s) in the sources below.
+
 https://www.theurbanpenguin.com/pxelinux-using-proxy-dhcp/
+
 https://www.theurbanpenguin.com/pxe-install-ubuntu-16-04/
