@@ -6,6 +6,7 @@ Variable(s) you can use in your own playbook.
 
 ### PXE server settings
 pxe_subnet                     : '192.168.0.0'
+
 pxe_tftpboot_dir               : '/opt/tftpboot'
 
 
@@ -13,16 +14,18 @@ pxe_tftpboot_dir               : '/opt/tftpboot'
 
 ### Kernel Options
 pxe_preseed_locale             : 'en_GB.UTF-8'
+
 pxe_preseed_keyboard           : 'us'
 
 ### Timezone
 pxe_preseed_timezone           : 'Europe/Amsterdam'
 
-## Username & Password
+### Username & Password
 pxe_preseed_user               : 'administrator'
+
 pxe_preseed_user_password      : 'Welkom123'
 
-## Mirror
+### Mirror
 pxe_preseed_mirror             : 'nl.archive.ubuntu.com'
 
 ## Source(s)
