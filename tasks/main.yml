@@ -9,9 +9,10 @@
   
   - name: "Install Packages"
     apt:
-      name: "{{ item }}"
+      name: "{{ packages }}"
       update_cache: yes
-    with_items:
+    vars:
+      packages:
       - pxelinux
       - syslinux
       - dnsmasq
@@ -66,22 +67,14 @@
   - name: "Import task os-ubuntu-1604-amd64.yml"
     import_tasks: os-ubuntu-1604-amd64.yml
      
-  - name: "Allow 67/udp and Port 69/udp through UFW"
+  - name: "Allow 67 and Port 69 on protocol tcp/udp through UFW"
     ufw:
       rule: allow
-      port: "{{ item }}"
-      proto: udp
+      port: "{{ item.port }}"
+      proto: "{{ item.proto }}"
       log: yes
     with_items:
-      - 67
-      - 69
-
-  - name: "Allow 67/tcp and Port 69/tcp through UFW"
-    ufw:
-      rule: allow
-      port: "{{ item }}"
-      proto: tcp
-      log: yes
-    with_items:
-      - 67
-      - 69
+      - { port: '67', proto: 'tcp' } 
+      - { port: '69', proto: 'tcp' } 
+      - { port: '67', proto: 'udp' } 
+      - { port: '69', proto: 'udp' } 
